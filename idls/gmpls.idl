@@ -1,0 +1,1058 @@
+//
+//  This file is part of gmpls-nextworks
+//
+//  Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Nextworks s.r.l.
+//
+//  @LICENSE_BEGIN@
+//  @LICENSE_END@
+//
+//  Giacomo Bernini       <g DOT bernini AT nextworks DOT it>
+//  Gino Carrozzo         <g DOT carrozzo AT nextworks DOT it>
+//  Nicola Ciulli         <n DOT ciulli AT nextworks DOT it>
+//  Francesco Salvestrini <f DOT salvestrini AT nextworks DOT it>
+//
+
+#ifndef GMPLS_IDL
+#define GMPLS_IDL
+
+#include "types.idl"
+
+interface gmplsTypes {
+
+        // Neighbour & adjacency
+        typedef Types::uint32    nodeId;
+        typedef nodeId           adjacencyId;
+        typedef Types::uint32    powerType; // IEEE float, W
+	typedef	Types::uint32	 operatorId;
+
+        // generic address
+        typedef Types::uint32    addrIPv4;
+        typedef Types::uint32    addrIPv6[4];
+        typedef Types::uint32    addrUnnum;
+        typedef Types::uint8     addrNSAP[20];
+        typedef Types::uint8     addrMAC[6];
+
+        enum addrType {
+                ADDRTYPE_IPV4,
+                ADDRTYPE_IPV6,
+                ADDRTYPE_UNNUM,
+                ADDRTYPE_NSAP,
+                ADDRTYPE_MAC
+        };
+
+        union addr switch (addrType) {
+                case ADDRTYPE_IPV4:   addrIPv4    ipv4;
+                case ADDRTYPE_IPV6:   addrIPv6    ipv6;
+                case ADDRTYPE_UNNUM:  addrUnnum   unnum;
+                case ADDRTYPE_NSAP:   addrNSAP    nsap;
+                case ADDRTYPE_MAC:    addrMAC     mac;
+        };
+        typedef sequence<addr> addrSeq;
+
+        typedef sequence<Types::uint8>  bitmapSeq;
+
+        //time info
+        struct timeInfo {
+                Types::uint32  startTime;
+                Types::uint32  endTime;
+        };
+
+        typedef sequence<timeInfo> channelSliceSeq;
+
+        // label
+        enum labelType {
+                LABELTYPE_L32,
+                LABELTYPE_L60,
+                LABELTYPE_TSON_FIXED,
+                LABELTYPE_TSON_FLEXIBLE
+        };
+
+        struct labelSubWdmFixedSlot {
+                Types::uint32   wavelengthId; // Otani format
+                Types::uint32   startSlot;
+                Types::uint32   numSlots;
+                bitmapSeq       bitmap;
+        };
+
+        struct subWdmFlexibleSlice {
+                Types::uint32   wavelengthId; // Otani format
+                channelSliceSeq slices;
+        };
+
+        typedef sequence<subWdmFlexibleSlice> labelSubWdmFlexibleSlice;
+
+        union labelId switch (labelType) {
+                case LABELTYPE_L32:           Types::uint32            label32;
+                case LABELTYPE_L60:           Types::uint64            label60;
+                case LABELTYPE_TSON_FIXED:    labelSubWdmFixedSlot     labelTsonFix;
+                case LABELTYPE_TSON_FLEXIBLE: labelSubWdmFlexibleSlice labelTsonFlex;
+        };
+        typedef sequence<labelId>  labelIdSeq;
+
+        //
+        // TE-Link and Data Link
+        //
+        enum linkIdType {
+                LINKIDTYPE_IPV4,
+                LINKIDTYPE_IPV6,
+                LINKIDTYPE_UNNUM
+        };
+
+        union linkId switch (linkIdType) {
+                case LINKIDTYPE_IPV4:  addrIPv4    ipv4;
+                case LINKIDTYPE_IPV6:  addrIPv6    ipv6;
+                case LINKIDTYPE_UNNUM: addrUnnum   unnum;
+        };
+
+        typedef linkId  TELinkId;
+        typedef linkId  DLinkId;
+
+        enum adjType {
+                ADJTYPE_UNI,
+                ADJTYPE_INNI,
+                ADJTYPE_ENNI
+        };
+
+        // TNA identifier
+        enum tnaIdType {
+                TNAIDTYPE_IPV4,
+                TNAIDTYPE_IPV6,
+                TNAIDTYPE_NSAP
+        };
+
+        union tnaId switch (tnaIdType) {
+                case TNAIDTYPE_IPV4:   addrIPv4    ipv4;
+                case TNAIDTYPE_IPV6:   addrIPv6    ipv6;
+                case TNAIDTYPE_NSAP:   addrNSAP    nsap;
+        };
+
+        // Call identifier
+
+        enum callIdType {
+                CALLIDTYPE_NULL,
+                CALLIDTYPE_OPSPEC,
+                CALLIDTYPE_GLOBUNIQ
+        };
+
+        enum sourceIdType {
+                SOURCEIDTYPE_IPV4,
+                SOURCEIDTYPE_IPV6,
+                SOURCEIDTYPE_NSAP,
+                SOURCEIDTYPE_MAC
+        };
+
+        union sourceId switch (sourceIdType) {
+                case SOURCEIDTYPE_IPV4:     addrIPv4    ipv4;
+                case SOURCEIDTYPE_IPV6:     addrIPv6    ipv6;
+                case SOURCEIDTYPE_NSAP:     addrNSAP    nsap;
+                case SOURCEIDTYPE_MAC:      addrMAC     mac;
+        };
+
+        struct segments {
+                Types::uint8   intlSeg[3];
+                Types::uint32  natlSeg[3];
+        };
+
+
+        struct callIdent {
+                callIdType     idType;
+                //segments     segs;
+                sourceId       srcId;
+                Types::uint64  localId;
+        };
+
+
+        struct recoBundleIdent {
+                nodeId              srcAddr;
+                nodeId              dstAddr;
+                Types::uint32       tunId;
+        };
+
+
+        struct lspIdent {
+                nodeId              dstNodeId;
+                nodeId              srcNodeId;
+                Types::uint32       tunId;
+                Types::uint32       extTid;
+                Types::uint32       lspId;
+        };
+
+
+        enum ifType {
+                IFTYPE_BCAST,
+                IFTYPE_P2P
+        };
+
+        enum labelState {
+                LABELSTATE_FREE,
+                LABELSTATE_BOOKED,
+                LABELSTATE_XCONNECTED,
+                LABELSTATE_BUSY
+        };
+
+        enum resourcePosition {
+                RESOURCEPOSITION_INGRESS,
+                RESOURCEPOSITION_EGRESS
+                //  RESOURCEPOSITION_EGRESSACTUAL
+        };
+
+        enum operState {
+                OPERSTATE_DOWN,
+                OPERSTATE_UP
+        };
+
+        enum adminState {
+                ADMINSTATE_DISABLED,
+                ADMINSTATE_ENABLED
+        };
+
+        struct statesBundle {
+                operState   opState;
+                adminState  admState;
+        };
+
+        enum recoveryType {
+                RECOVERYTYPE_UNPROTECTED,
+                RECOVERYTYPE_PROTECTION,
+                RECOVERYTYPE_PREPLANNED,
+                RECOVERYTYPE_OTF,
+                RECOVERYTYPE_OTF_REVERTIVE
+        };
+
+        enum disjointness {
+                DISJOINTNESS_NONE,
+                DISJOINTNESS_LINK,
+                DISJOINTNESS_NODE,
+                DISJOINTNESS_SRLG
+        };
+
+        enum switchingCap {
+                SWITCHINGCAP_UNKNOWN,     // = 0,
+                SWITCHINGCAP_PSC_1,       // = 1,
+                SWITCHINGCAP_PSC_2,       // = 2,
+                SWITCHINGCAP_PSC_3,       // = 3,
+                SWITCHINGCAP_PSC_4,       // = 4,
+                SWITCHINGCAP_EVPL,        // = 30,
+                SWITCHINGCAP_8021_PBBTE,  // = 40,
+                SWITCHINGCAP_L2SC,        // = 51,
+                SWITCHINGCAP_TDM,         // = 100,
+                SWITCHINGCAP_DCSC,        // = 125,
+                SWITCHINGCAP_OBSC,        // = 140,
+                SWITCHINGCAP_LSC,         // = 150,
+                SWITCHINGCAP_FSC          // = 200
+        };
+
+        enum encodingType {
+                ENCODINGTYPE_UNKNOWN,         // = 0,
+                ENCODINGTYPE_PACKET,          // = 1,
+                ENCODINGTYPE_ETHERNET,        // = 2,
+                ENCODINGTYPE_ANSI_ETSI_PDH,   // = 3,
+                ENCODINGTYPE_RESERVED_1,      // = 4,
+                ENCODINGTYPE_SDH_SONET,       // = 5,
+                ENCODINGTYPE_RESERVED_2,      // = 6,
+                ENCODINGTYPE_DIGITAL_WRAPPER, // = 7,
+                ENCODINGTYPE_LAMBDA,          // = 8,
+                ENCODINGTYPE_FIBER,           // = 9,
+                ENCODINGTYPE_RESERVED_3,      // = 10,
+                ENCODINGTYPE_FIBERCHANNEL,    // = 11,
+                ENCODINGTYPE_G709_ODU,        // = 12,
+                ENCODINGTYPE_G709_OC,         // = 13,
+                ENCODINGTYPE_LINE_8B10B,      // = 14,
+                ENCODINGTYPE_TSON_FIXED,      // = 240
+                ENCODINGTYPE_TSON_FLEXIBLE    // = 241
+        };
+
+        enum genPid {
+                GPID_UNKNOWN                , // =  0
+                GPID_ASYNCH_E4              , // =  5,
+                GPID_ASYNCH_DS3_T3          , // =  6,
+                GPID_ASYNCH_E3              , // =  7,
+                GPID_BIT_SYNCH_E3           , // =  8,
+                GPID_BYTE_SYNCH_E3          , // =  9,
+                GPID_ASYNCH_DS2_T2          , // = 10,
+                GPID_BIT_SYNCH_DS2_T2       , // = 11,
+                GPID_ASYNCH_E1              , // = 13,
+                GPID_BYTE_SYNCH_E1          , // = 14,
+                GPID_BYTE_SYNCH_31DS0       , // = 15,
+                GPID_ASYNCH_DS1_T1          , // = 16,
+                GPID_BIT_SYNCH_DS1_T1       , // = 17,
+                GPID_BYTE_SYNCH_DS1_T1      , // = 18,
+                GPID_VC_11_IN_VC_12         , // = 19,
+                GPID_DS1_SF_ASYNCH          , // = 22,
+                GPID_DS1_ESF_ASYNCH         , // = 23,
+                GPID_DS3_M23_ASYNCH         , // = 24,
+                GPID_DS3_C_PARITY_ASYNCH    , // = 25,
+                GPID_VT_LOVC                , // = 26,
+                GPID_STSSPE_HOVC            , // = 27,
+                GPID_POS_NOSCRAMBLING_16CRC , // = 28,
+                GPID_POS_NOSCRAMBLING_32CRC , // = 29,
+                GPID_POS_SCRAMBLING_16CRC   , // = 30,
+                GPID_POS_SCRAMBLING_32CRC   , // = 31,
+                GPID_ATM_MAPPING            , // = 32,
+                GPID_ETHERNET               , // = 33,
+                GPID_SONET_SDH              , // = 34,
+                GPID_DIGITAL_WRAPPER        , // = 36,
+                GPID_LAMBDA                 , // = 37,
+                GPID_ANSI_ETSI_PDH          , // = 38,
+                GPID_LAPS_X85_X86           , // = 40,
+                GPID_FDDI                   , // = 41,
+                GPID_DQDB                   , // = 42,
+                GPID_FIBERCHANNEL_3         , // = 43,
+                GPID_HDLC                   , // = 44,
+                GPID_ETH_V2_DIX             , // = 45,
+                GPID_ETH_802_3              , // = 46,
+                GPID_G709_ODUJ              , // = 47,
+                GPID_G709_OTUK              , // = 48,
+                GPID_CBR_CBRA               , // = 49,
+                GPID_CBRB                   , // = 50,
+                GPID_BSOT                   , // = 51,
+                GPID_BSNT                   , // = 52,
+                GPID_IP_PPP_GFP             , // = 53,
+                GPID_ETHMAC_GFP             , // = 54,
+                GPID_ETHPHY_GFP             , // = 55,
+                GPID_ESCON                  , // = 56,
+                GPID_FICON                  , // = 57,
+                GPID_FIBRECHANNEL             // = 58,
+        };
+
+        enum protType {
+                PROTTYPE_NONE            , //   = 0x00,
+                PROTTYPE_EXTRA           , //   = 0x01,
+                PROTTYPE_UNPROTECTED     , //   = 0x02,
+                PROTTYPE_SHARED          , //   = 0x04,
+                PROTTYPE_DEDICATED_1TO1  , //   = 0x08,
+                PROTTYPE_DEDICATED_1PLUS1, //   = 0x10,
+                PROTTYPE_ENHANCED          //   = 0x20,
+        };
+
+
+        enum crankbackScope {
+                CRANKBACKSCOPE_NONE,
+                CRANKBACKSCOPE_E2E,
+                CRANKBACKSCOPE_BOUNDARY,
+                CRANKBACKSCOPE_SEGMENTBASED
+        };
+
+        enum issuerType {
+                ISSUERTYPE_MANAGEMENT_IF,
+                ISSUERTYPE_UNI_IF,
+                ISSUERTYPE_ENNI_IF,
+                ISSUERTYPE_INNI_IF,
+                ISSUERTYPE_NCC,
+                ISSUERTYPE_CCC,
+                ISSUERTYPE_ENNIGW,
+                ISSUERTYPE_UNIGW
+        };
+
+        struct actorInfo {
+                issuerType  issuer;
+                boolean     forceCommand;
+        };
+
+        enum lspMessageType {
+                LSPMESSAGETYPE_PATH,
+                LSPMESSAGETYPE_RESV,
+                LSPMESSAGETYPE_RESVCONF,
+                LSPMESSAGETYPE_ERROR,
+                LSPMESSAGETYPE_PATHERR,
+                LSPMESSAGETYPE_PATHERR_PSR,
+                LSPMESSAGETYPE_PATHERR_REL,
+                LSPMESSAGETYPE_RESVERR,
+                LSPMESSAGETYPE_RESVERR_REL,
+                LSPMESSAGETYPE_PATHTEAR,
+                LSPMESSAGETYPE_RESVTEAR,
+                LSPMESSAGETYPE_TEAR,
+                LSPMESSAGETYPE_PATHDOWN,
+                LSPMESSAGETYPE_RESVDOWN,
+                LSPMESSAGETYPE_DOWN
+        };
+
+        enum callMessageType {
+                CALLMESSAGETYPE_SETUPREQUEST,
+                CALLMESSAGETYPE_SETUPINDICATION,
+                CALLMESSAGETYPE_SETUPCONFIRM,
+                CALLMESSAGETYPE_RELEASEREQUEST,
+                CALLMESSAGETYPE_RELEASEINDICATION,
+                CALLMESSAGETYPE_SIGERROR
+        };
+
+        enum grsvpteErrorCode {
+                GRSVPTEERRORCODE_X
+        };
+
+        enum grsvpteErrorValue {
+                GRSVPTEERRORVALUE_X
+        };
+
+        struct errorInfo {
+                grsvpteErrorCode   errorCode;
+                grsvpteErrorValue  errorValue;
+                nodeId             erroredNode;
+                boolean            stateRemoved;
+        };
+
+        enum lspType {
+                LSPTYPE_SPC,  // Soft permanent connection
+                LSPTYPE_PC,   // Permanent connection
+                LSPTYPE_SC    // Switched connection
+        };
+
+        enum lspResourceAction {
+                LSPRESOURCEACTION_XCONNECT,
+                LSPRESOURCEACTION_BOOK
+        };
+
+        enum lspRroMode {
+                LSPRROMODE_OFF,         // no RRO recording
+                LSPRROMODE_TEL_DETAIL,  // recoding just up to TE-links
+                LSPRROMODE_DL_DETAIL,   // recoding just up to Data-links
+                LSPRROMODE_ALL          // recoding all up to labels
+        };
+
+        //
+        //
+        //   Data containers
+        //
+        //
+
+        // Transport Network resource
+        struct tnResource {
+                TELinkId   teLink;
+                DLinkId    dataLink;
+                labelId    label;
+        };
+
+        struct tnaResource {
+                tnaId      tna;
+                DLinkId    dataLink;// only if _v != 0
+                labelId    label;   // only if _v != 0
+        };
+        typedef sequence<tnaResource> tnaResourceSeq;
+
+        struct tnaEndpoints {
+                tnaResource src;
+                tnaResource dst;
+        };
+        typedef sequence<tnaEndpoints> tnaEndpointsSeq;
+
+        struct connEndPoint {
+                nodeId     node;
+                TELinkId   teLink;
+                DLinkId    dataLink;
+                labelId    label;
+        };
+
+        struct connEndpoints {
+                connEndPoint src;
+                connEndPoint dst;
+        };
+        typedef sequence<connEndpoints> connEndpointsSeq;
+
+        enum callType {
+                CALLTYPE_AUTO,      // Unspecified; automatically set by the network or client side
+                CALLTYPE_SPC,       // Soft permanent call; aka CALLTYPE_aMGTzMGT
+                CALLTYPE_PC,        // Permanent call
+                CALLTYPE_SC,        // Switched call
+                CALLTYPE_aUGWzUGW,  // G.UNI gw-originated call, terminating on G.UNI gw
+                CALLTYPE_aMGTzEGW,  // Mgmt-originated call, terminating on G.E-NNI gw
+                CALLTYPE_aUGWzEGW,  // G.UNI gw-originated call, terminating on G.E-NNI gw
+                CALLTYPE_aEGWzMGT,  // G.E-NNI gw-originated call, terminating on Mgmt
+                CALLTYPE_aEGWzUGW,  // G.E-NNI gw-originated call, terminating on G.UNI gw
+                CALLTYPE_aEGWzEGW   // G.E-NNI gw-originated call, terminating on G.E-NNI gw
+        };
+
+        struct callParams {
+                string      name;
+                callType    typee;
+                timeInfo    times;
+        };
+
+        struct recoveryParams {
+                recoveryType  recType;
+                disjointness  disjType;
+        };
+
+        enum lspRole {
+                LSPROLE_UNDEFINED,
+                LSPROLE_WORKER,
+                LSPROLE_BACKUP
+        };
+
+        struct rsvpParams {
+                Types::uint32   refreshInterval;
+                boolean         activateAck;
+                Types::uint32   rapidRetransmInterval;
+                Types::uint32   rapidRetryLimit;
+                Types::uint32   incrementValueDelta;
+                crankbackScope  crankback;
+                Types::uint32   maxCbackRetriesSrc;
+                Types::uint32   maxCbackRetriesIntmd;
+                lspRroMode      rroMode;
+        };
+        typedef sequence<rsvpParams, 1> rsvpParamsSeq;
+
+        struct qosParams {
+                Types::uint32   maxDelay;       // micro-seconds
+                Types::uint32   maxJitter;      // micro-seconds
+                Types::uint32   maxPktLossRate; // IEEE single-prec float
+        };
+
+        struct lspParams {
+                lspType                 typee;
+                lspRole                 role;
+                switchingCap            swCap;
+                encodingType            encType;
+                genPid                  gpid;
+                Types::uint32           bw; // encoded IEEE FP
+                Types::uint32           setupPrio;
+                Types::uint32           holdingPrio;
+                Types::uint32           excludeAny;
+                Types::uint32           includeAny;
+                Types::uint32           includeAll;
+                protType                linkProtMask;
+                lspResourceAction       action;
+                timeInfo                times;
+                rsvpParamsSeq           rsvpData;
+                qosParams               qos;
+        };
+
+
+        struct eroItemPublic {
+                nodeId    node;
+                TELinkId  teLink;
+                DLinkId   upstreamDataLink;
+                DLinkId   downstreamDataLink;
+                labelId   upstreamLabel;
+                labelId   downstreamLabel;
+                boolean   loose;
+        };
+
+        struct pathKeyHop {
+                Types::uint16 pathKey;
+                addr          pceId;
+        };
+
+        enum eroSubobjType {
+                EROSUBOBJTYPE_PUBLIC,
+                EROSUBOBJTYPE_PATHKEY
+        };
+
+        union eroItem switch(eroSubobjType) {
+                case EROSUBOBJTYPE_PUBLIC:  eroItemPublic  hop;
+                case EROSUBOBJTYPE_PATHKEY: pathKeyHop     pks;
+        };
+        typedef sequence<eroItem>       eroSeq;
+        typedef sequence<eroItemPublic> eroItemPublicSeq;
+
+        struct rroItemPublic {
+                nodeId    node;
+                TELinkId  teLink;
+                DLinkId   upstreamDataLink;
+                DLinkId   downstreamDataLink;
+                labelId   upstreamLabel;
+                labelId   downstreamLabel;
+        };
+
+        enum rroSubobjType {
+                RROSUBOBJTYPE_PUBLIC,
+                RROSUBOBJTYPE_PATHKEY
+        };
+
+        union rroItem switch(rroSubobjType) {
+                case RROSUBOBJTYPE_PUBLIC:  rroItemPublic  hop;
+                case RROSUBOBJTYPE_PATHKEY: pathKeyHop     pks;
+        };
+        typedef sequence<rroItem>   rroSeq;
+
+        enum xroAttributeType {
+                XROATTRIBUTETYPE_EXCLUDEALL_INTFS,
+                XROATTRIBUTETYPE_EXCLUDEALL_NODES,
+                XROATTRIBUTETYPE_EXCLUDEALL_SRLG
+        };
+
+        enum xroItemType {
+                XROITEMTYPE_LINK,
+                XROITEMTYPE_ASNUMBER,
+                XROITEMTYPE_SRLG,
+                XROITEMTYPE_PATHKEY
+        };
+
+        struct xroLink {
+                boolean          exclude;
+                TELinkId         hopAddr;
+                Types::uint16    hopPrefix;
+                xroAttributeType hopAttribute;
+        };
+
+        struct xroAs {
+                boolean        exclude;
+                Types::uint32  asNumber;
+        };
+
+        struct xroSrlg {
+                boolean        exclude;
+                Types::uint32  srlgId;
+        };
+
+        union xroItem switch (xroItemType) {
+                case XROITEMTYPE_LINK:     xroLink    linkHop;
+                case XROITEMTYPE_ASNUMBER: xroAs      asHop;
+                case XROITEMTYPE_SRLG:     xroSrlg    srlgHop;
+                case XROITEMTYPE_PATHKEY:  pathKeyHop pksHop;
+        };
+        typedef sequence<xroItem>   xroSeq;
+
+        struct aaaParams {
+                string   authzToken;
+        };
+
+
+        // Used by LRM
+        typedef Types::uint32           ccId;
+        typedef sequence<TELinkId>      TELinkIdSeq;
+        typedef sequence<DLinkId>       DLinkIdSeq;
+
+        struct wdmLambdasBitmap {
+                // in ITU DWDM format
+                Types::uint32       baseLambda; // ITU DWDM format
+                Types::uint32       numLambdas; // 16 lsbs
+                bitmapSeq           bitmap;     // numLambdas/32 +1
+        };
+
+        typedef wdmLambdasBitmap  DLinkWdmLambdasBitmap;
+        typedef wdmLambdasBitmap  teLinkWdmLambdasBitmap;
+
+        typedef Types::uint32     bwPerPrio[8];
+
+        typedef sequence<Types::uint32>     srlgSeq;
+
+        struct freeCTPEntry {
+                Types::uint8   sigType;
+                Types::uint32  ctps; // 24 lsbs
+        };
+        typedef sequence<freeCTPEntry>  freeCTPSeq;
+
+        struct slotCalendarEvent {
+                Types::uint32    ntpSeconds;
+                Types::uint32    ntpFraction;
+                freeCTPSeq       freeSlots;
+        };
+        typedef sequence<slotCalendarEvent> slotCalendarSeq;
+
+        struct linkObscBwInfo {
+                Types::uint32   wavelengthId; // Otani format
+                slotCalendarSeq bw;
+        };
+
+        typedef sequence<linkObscBwInfo>  teLinkObscBwInfoSeq;
+        typedef sequence<linkObscBwInfo>  dataLinkObscBwInfoSeq;
+        typedef sequence<linkObscBwInfo>  portObscBwInfoSeq;
+
+        struct linkCalendarEvent {
+                Types::uint32    unixTime;
+                bwPerPrio        availBw;
+        };
+
+        typedef sequence<linkCalendarEvent> teLinkCalendarSeq;
+        typedef sequence<linkCalendarEvent> dataLinkCalendarSeq;
+
+        struct vlinkBwReplanInfo {
+                Types::uint32  maxBwUpgrade;
+                Types::uint32  maxBwDowngrade;
+        };
+        typedef sequence<vlinkBwReplanInfo, 1> vlinkBwReplanInfoSeq;
+
+        struct linkHwParameters {
+                protType                        prot;
+                switchingCap                    swCap;
+                encodingType                    encType;
+                Types::uint32                   maxBw;
+                Types::uint32                   maxResBw;
+                bwPerPrio                       availBw;
+                bwPerPrio                       maxLspBw;
+                Types::uint32                   minLspBw;
+                teLinkCalendarSeq               calendar;
+                teLinkWdmLambdasBitmap          lambdasBit;
+                teLinkObscBwInfoSeq             obscBwCalendar;
+                powerType                       powerConsumption;
+                vlinkBwReplanInfoSeq            vlinkBwReplanning;
+
+                // a null value to be interpreted as not-significant field
+                Types::uint32 interfaceMTU; // 16 lsbs
+                Types::uint32 avgDelay;     // 24-bit, micro-secs
+                Types::uint32 avgJitter;    // 24-bit, micro-secs
+                Types::uint32 maxDelay;     // 24-bit, micro-secs
+
+                Types::uint32 avgPktLoss;   // 24-bit, micro-secs
+                Types::uint32 maxPktLoss;   // 24-bit, micro-secs
+        };
+        typedef sequence<linkHwParameters, 1> linkHwParametersSeq;
+
+        struct DLinkParameters {
+                statesBundle         states;
+                linkHwParametersSeq  hwParms;
+        };
+        typedef sequence<DLinkParameters, 1> DLinkParametersSeq;
+
+        struct TELinkParameters {
+                statesBundle         states;
+                Types::uint32        telkey; // to be removed ASAP
+                adjType              adj;
+                Types::uint32        metric;
+                srlgSeq              srlg;
+                Types::uint32        colorMask;
+                nodeId               remRcId;
+                tnaId                tna;
+                boolean              isBundled;
+                linkHwParametersSeq  hwParms;
+        };
+
+        struct TELinkData {
+                TELinkId          localId;
+                TELinkId          remoteId;
+                nodeId            neighbour;
+                TELinkParameters  parms;
+        };
+        typedef sequence<TELinkData>   TELinkDataSeq;
+
+        struct DLinkData {
+                DLinkId             localId;
+                DLinkId             remoteId;
+                boolean             isHwSynched;
+                DLinkParametersSeq  hwParms;
+        };
+        typedef sequence<DLinkData>  DLinkDataSeq;
+
+        struct nodeData {
+                boolean     isPhysical;
+                powerType   powerConsumption; // IEEE float, W
+        };
+
+        struct TELinkOpaqueBitmap {
+                Types::uint32   numBits; // number of significant bits
+                bitmapSeq       bitmap;  // seq<uint8> (length may be different from numBits)
+        };
+        typedef sequence<TELinkOpaqueBitmap>    TELinkOpaqueBitmapSeq;
+
+        // used by TNRC
+        enum xcDirection {
+                XCDIR_UNIDIRECTIONAL,
+                XCDIR_BIDIRECTIONAL,
+                XCDIR_BCAST
+        };
+
+        enum tnrcResult {
+                TNRC_RESULT_MAKEXC_NOERROR,
+                TNRC_RESULT_MAKEXC_EQPTDOWN,
+                TNRC_RESULT_MAKEXC_PARAMERROR,
+                TNRC_RESULT_MAKEXC_NOTCAPABLE,
+                TNRC_RESULT_MAKEXC_BUSYRESOURCES,
+                TNRC_RESULT_MAKEXC_INTERNALERROR,
+                TNRC_RESULT_MAKEXC_GENERICERROR,
+                TNRC_RESULT_DESTROYXC_NOERROR,
+                TNRC_RESULT_DESTROYXC_EQPTDOWN,
+                TNRC_RESULT_DESTROYXC_PARAMERROR,
+                TNRC_RESULT_DESTROYXC_NOTCAPABLE,
+                TNRC_RESULT_DESTROYXC_BUSYRESOURCES,
+                TNRC_RESULT_DESTROYXC_INTERNALERROR,
+                TNRC_RESULT_DESTROYXC_GENERICERROR,
+                TNRC_RESULT_RESERVEXC_NOERROR,
+                TNRC_RESULT_RESERVEXC_EQPTDOWN,
+                TNRC_RESULT_RESERVEXC_PARAMERROR,
+                TNRC_RESULT_RESERVEXC_NOTCAPABLE,
+                TNRC_RESULT_RESERVEXC_BUSYRESOURCES,
+                TNRC_RESULT_RESERVEXC_INTERNALERROR,
+                TNRC_RESULT_RESERVEXC_GENERICERROR,
+                TNRC_RESULT_UNRESERVEXC_NOERROR,
+                TNRC_RESULT_UNRESERVEXC_EQPTDOWN,
+                TNRC_RESULT_UNRESERVEXC_PARAMERROR,
+                TNRC_RESULT_UNRESERVEXC_NOTCAPABLE,
+                TNRC_RESULT_UNRESERVEXC_BUSYRESOURCES,
+                TNRC_RESULT_UNRESERVEXC_INTERNALERROR,
+                TNRC_RESULT_UNRESERVEXC_GENERICERROR
+        };
+
+        enum xcStatus {
+                XC_STATUS_XCONNECTED,
+                XC_STATUS_RESERVED
+        };
+
+        typedef sequence<Types::uint32>  xcIdSeq;
+
+	struct xcParams {
+                DLinkId  dataLink;
+                labelId  label;
+        };
+
+        struct xcInfo {
+                xcParams xcIn;
+                xcParams xcOut;
+        };
+
+        typedef sequence<xcInfo> xconnSeq;
+
+        typedef sequence<Types::uint32>  areaSeq;
+        typedef sequence<Types::uint32>  asSeq;
+
+        enum nodeType {
+                NODETYPE_UNKNOWN,
+                NODETYPE_NETWORK,
+                NODETYPE_IT
+        };
+
+        struct nodeIdent {
+                nodeId     id;
+                nodeType   typee;
+        };
+        typedef sequence<nodeIdent>     nodeIdentSeq;
+
+        struct netNodeParams {
+                boolean         isDomain;
+                statesBundle    aState;
+                Types::uint32   colors;
+                areaSeq         areas;
+                powerType       powerConsumption; // IEEE float, W
+        };
+
+        enum linkMode {
+                LINKMODE_UNKNOWN         ,
+                LINKMODE_P2P_UNNUMBERED  ,
+                LINKMODE_P2P_NUMBERED    ,
+                LINKMODE_MULTIACCESS     ,
+                LINKMODE_ENNI_INTERDOMAIN,
+                LINKMODE_ENNI_INTRADOMAIN
+        };
+
+        struct iscParamsGen {
+                switchingCap    swCap;
+                encodingType    encType;
+                bwPerPrio       maxLSPbandwidth;
+        };
+
+        struct iscParamsPsc {
+                switchingCap    swCap;
+                encodingType    encType;
+                bwPerPrio       maxLSPbandwidth;
+                Types::uint32   minLSPbandwidth;
+                Types::uint32   interfaceMTU; // 16 lsbs
+                Types::uint32   maxDelay;     // 24-bit, micro-secs
+                Types::uint32   maxPktLoss;   // 24-bit, micro-secs
+        };
+
+        struct iscParamsTdm {
+                switchingCap    swCap;
+                encodingType    encType;
+                bwPerPrio       maxLSPbandwidth;
+                Types::uint32   minLSPbandwidth;
+                Types::uint8    indication;
+        };
+
+        union isc switch (switchingCap) {
+                case SWITCHINGCAP_PSC_1:
+                case SWITCHINGCAP_PSC_2:
+                case SWITCHINGCAP_PSC_3:
+                case SWITCHINGCAP_PSC_4:
+                        iscParamsPsc  psc;
+                case SWITCHINGCAP_TDM:
+                        iscParamsTdm  tdm;
+                case SWITCHINGCAP_L2SC:
+                case SWITCHINGCAP_OBSC:
+                case SWITCHINGCAP_LSC:
+                case SWITCHINGCAP_FSC:
+                        iscParamsGen  gen;
+        };
+        typedef sequence<isc>   iscSeq;
+
+        struct teLinkIdent {
+                nodeId     localNodeId;
+                TELinkId   localId;
+                nodeId     remoteNodeId;
+                TELinkId   remoteId;
+                linkMode   mode;
+                nodeId     localRcId;
+                nodeId     remoteRcId;
+        };
+        typedef sequence<teLinkIdent>  teLinkIdentSeq;
+
+        struct teLinkComParams {
+                Types::uint32         adminMetric;
+                Types::uint32         teMetric;
+                Types::uint32         teColorMask;
+                Types::uint8          teProtectionTypeMask;
+                Types::uint32         teMaxBw;
+                Types::uint32         teMaxResvBw;
+                powerType             powerConsumption;
+                vlinkBwReplanInfoSeq  vlinkBwReplanning;
+        };
+
+        struct teLinkPscParams {
+                Types::uint32 avgDelay;      // 24-bit, micro-secs
+                Types::uint32 avgJitter;     // 24-bit, micro-secs
+                Types::uint32 avgPktLoss;    // 24-bit, micro-secs
+                Types::uint32 residualBw;    // IEEE float, bps, max - LSPs
+                Types::uint32 availableBw;   // IEEE float, bps, resBw - pkt bw
+        };
+
+        struct teLinkTdmParams {
+                Types::uint32  hoMuxCapMask;
+                Types::uint32  loMuxCapMask;
+                Types::uint32  transparencyMask;
+                Types::uint32  blsrRingId;
+        };
+
+        struct teLinkLscG709Params {
+                Types::uint32  odukMuxCapMask;
+        };
+
+        struct teLinkWdmAmplifierEntry {
+                Types::uint32  gain;
+                Types::uint32  noiseFigure;
+        };
+        typedef sequence<teLinkWdmAmplifierEntry>   amplifiersSeq;
+
+        struct teLinkLscWdmParams {
+                Types::uint32  dispersionPMD;
+                Types::uint32  spanLength;
+                amplifiersSeq  amplifiers;
+        };
+
+        struct tnaIdent {
+                nodeId        rc;
+                nodeId        node;
+                tnaId         tna;
+                Types::uint8  prefix;
+        };
+        typedef sequence<tnaIdent>   tnaIdentSeq;
+
+        struct callerType {
+                Types::uint32 uniqueId;
+        };
+        typedef sequence<callerType>  callerTypeSeq;
+
+        struct callerData {
+                Types::uint32 localId;   // maybe not always needed
+                string        authZData; // XXX/howto initialize in config??
+        };
+
+
+        enum routeMetricType {
+                //FROM RFC5440
+                ROUTEMETRICTYPE_IGP,
+                ROUTEMETRICTYPE_TE,
+                ROUTEMETRICTYPE_HOP_COUNT,
+
+                //FROM RFC5541
+                ROUTEMETRICTYPE_AGGREGATE_BW_CONSUMPTION,
+                ROUTEMETRICTYPE_MOST_LOADED_LINK,
+                ROUTEMETRICTYPE_CUMULATIVE_IGP,
+                ROUTEMETRICTYPE_CUMULATIVE_TE,
+
+                // draft-ietf-pce-inter-layer-ext-05.txt
+                ROUTEMETRICTYPE_MLN_ADAPTATIONS_COUNT,
+                ROUTEMETRICTYPE_MLN_LAYERS_COUNT,
+
+                // proprietary
+                ROUTEMETRICTYPE_IT_POWER,
+                ROUTEMETRICTYPE_IT_GENERIC_COST,
+                ROUTEMETRICTYPE_IT_MAXRESIDUAL_CPU,
+                ROUTEMETRICTYPE_IT_MAXRESIDUAL_STORAGE,
+                ROUTEMETRICTYPE_NET_POWER,
+                ROUTEMETRICTYPE_NET_IT_POWER
+        };
+
+        struct routeMetric {
+                routeMetricType typee;
+                Types::uint32   value;
+        };
+        typedef sequence<routeMetric> routeMetricSeq;
+
+        typedef char  currencyType[3]; // ISO 4217 currency code
+
+        enum  timeLength {
+                TIMELENGTH_NONE,
+                TIMELENGTH_MINUTE,
+                TIMELENGTH_HOUR,
+                TIMELENGTH_DAY,
+                TIMELENGTH_WEEK,
+                TIMELENGTH_MONTH,
+                TIMELENGTH_YEAR
+        };
+
+        enum dataVolume {
+                DATAVOLUME_NONE,
+                DATAVOLUME_KB,
+                DATAVOLUME_MB,
+                DATAVOLUME_GB,
+                DATAVOLUME_TB
+        };
+
+        enum priceModel {
+                PRICEMODEL_PAYASYOUGO,
+                PRICEMODEL_FLAT
+        };
+
+        struct priceElem {
+                Types::uint32  value;
+                timeLength     timeUnit;
+                dataVolume     dataUnit;
+        };
+        typedef sequence<priceElem> priceElemSeq;
+
+        struct priceInfo {
+                priceModel     model;
+                currencyType   currency;
+                priceElem      priceUnit;
+                priceElemSeq   priceCaps;
+        };
+        typedef sequence <priceInfo> priceInfoSeq;
+
+        enum endpointsType {
+                ENDPOINTSTYPE_TNAS,
+                ENDPOINTSTYPE_CONNS
+        };
+
+        union endPoints switch(endpointsType) {
+                case ENDPOINTSTYPE_TNAS:  tnaEndpoints  tnaEps;
+                case ENDPOINTSTYPE_CONNS: connEndpoints connEps;
+        };
+
+        struct routeOffer {
+                endPoints      eps;
+                routeMetricSeq routeCosts;
+                priceInfoSeq   routePrices;
+                timeInfo       validity;
+                eroSeq         wEro;    // maybe empty for security reasons
+                eroSeq         pEro;    // maybe empty for security reasons
+                string         extInfo; // placeholder for any extension info
+        };
+        typedef sequence<routeOffer> routeOfferSeq;
+
+        // domain id
+        enum domainType {
+                DOMAINTYPE_IGP_AREA,
+                DOMAINTYPE_AS_NUMBER,
+                DOMAINTYPE_IPV4,
+                DOMAINTYPE_IPV6
+        };
+
+        union domainId switch(domainType) {
+                case DOMAINTYPE_IGP_AREA:  Types::uint32 igp_area;
+                case DOMAINTYPE_AS_NUMBER: Types::uint32 as_number;
+                case DOMAINTYPE_IPV4:      addrIPv4      ipv4;
+                case DOMAINTYPE_IPV6:      addrIPv6      ipv6;
+        };
+        typedef sequence<domainId> domainIdSeq;
+};
+
+interface gmplsExceptions {
+        // This interface should be used as common point
+        // to put exceptions used by different modules
+
+        exception CallerNotRegistered {
+                gmplsTypes::callerType caller;
+                string                 what;
+        };
+
+};
+
+#endif

@@ -1,0 +1,142 @@
+//
+//  This file is part of gmpls-nextworks
+//
+//  Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Nextworks s.r.l.
+//
+//  @LICENSE_BEGIN@
+//  @LICENSE_END@
+//
+//  Giacomo Bernini       <g DOT bernini AT nextworks DOT it>
+//  Gino Carrozzo         <g DOT carrozzo AT nextworks DOT it>
+//  Nicola Ciulli         <n DOT ciulli AT nextworks DOT it>
+//  Francesco Salvestrini <f DOT salvestrini AT nextworks DOT it>
+//
+
+#ifndef TNRC_COMMON_IDL
+#define TNRC_COMMON_IDL
+
+#include "types.idl"
+#include "gmpls.idl"
+
+module TNRC {
+
+        typedef Types::uint8  equipmentId;
+        typedef Types::uint16 boardId;
+        typedef Types::uint16 portId;
+
+        typedef Types::uint32 portIdentifier;
+
+        enum equipmentType {
+                EQUIPMENT_UNDEFINED,
+                EQUIPMENT_SIMULATOR,
+                EQUIPMENT_TSON,
+                EQUIPMENT_OPST,
+                EQUIPMENT_VIRTUAL_NODE
+        };
+
+        struct eqptDetails {
+                string location;
+                string name;
+        };
+
+        exception EqptLinkDown  { string  what; };
+        exception ParamError    { string  what; };
+        exception NotCapable    { string  what; };
+        exception BusyResources { string  what; };
+        exception InternalError { string  what; };
+        exception GenericError  { string  what; };
+        exception XcNotFound    { string  what; };
+
+        enum xcResultCode {
+                XC_RESULT_SUCCESS,
+                XC_RESULT_FAILURE
+        };
+
+        enum xcErrorCode {
+                XC_ERROR_NONE,
+                XC_ERROR_EQPTLINKDOWN,
+                XC_ERROR_PARAMERROR,
+                XC_ERROR_NOTCAPABLE,
+                XC_ERROR_BUSYRESOURCES,
+                XC_ERROR_INTERNALERROR,
+                XC_ERROR_GENERICERROR
+        };
+
+        enum xcAction {
+                XC_ACTION_NONE,
+                XC_ACTION_RESERVE,
+                XC_ACTION_CONFIRM,
+                XC_ACTION_PROPOSE,
+                XC_ACTION_ACTIVATE
+        };
+
+        enum notificationType {
+                NOTIFICATION_ALARM,
+                NOTIFICATION_RES_UPDATE,
+                NOTIFICATION_NODE_UPDATE,
+                NOTIFICATION_PORT_UPDATE
+        };
+
+        enum nodeNotificationType {
+                NODE_NOTIFICATION_POWER_UPDATE
+        };
+
+        enum portNotificationType {
+                PORT_NOTIFICATION_POWER_UPDATE,
+                PORT_NOTIFICATION_REPLAN_UPDATE
+        };
+
+        union nodeUpdateParms switch (nodeNotificationType) {
+                case NODE_NOTIFICATION_POWER_UPDATE:  gmplsTypes::powerType  powerCons;
+        };
+
+        struct nodeUpdateInfo {
+                equipmentId              nodeId;
+                nodeUpdateParms          updParms;
+        };
+
+        union portUpdateParms switch (portNotificationType) {
+                case PORT_NOTIFICATION_POWER_UPDATE:  gmplsTypes::powerType         powerCons;
+                case PORT_NOTIFICATION_REPLAN_UPDATE: gmplsTypes::vlinkBwReplanInfo bwInfo;
+        };
+
+        struct portUpdateInfo {
+                portIdentifier           portId;
+                portUpdateParms          updParms;
+        };
+
+        struct alarmInfo {
+                portIdentifier        portId;
+                gmplsTypes::labelId   lblId;
+                gmplsTypes::operState event;
+        };
+
+        struct resourceUpdateInfo {
+                portIdentifier                portId;
+                gmplsTypes::portObscBwInfoSeq updBw;
+        };
+
+        union notificationDetails switch (notificationType) {
+                case NOTIFICATION_ALARM:       alarmInfo          alarm;
+                case NOTIFICATION_RES_UPDATE:  resourceUpdateInfo resUpd;
+                case NOTIFICATION_NODE_UPDATE: nodeUpdateInfo     nodeUpd;
+                case NOTIFICATION_PORT_UPDATE: portUpdateInfo     portUpd;
+
+        };
+
+        typedef sequence<notificationDetails> notificationSeq;
+
+        struct xcResource {
+                portIdentifier       portId;
+                gmplsTypes::labelId  lblId;
+        };
+
+        struct xcEndPoints {
+                xcResource resIn;
+                xcResource resOut;
+        };
+
+        typedef sequence<xcEndPoints> xcSeq;
+};
+
+#endif

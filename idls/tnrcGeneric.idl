@@ -1,0 +1,240 @@
+//
+//  This file is part of gmpls-nextworks
+//
+//  Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Nextworks s.r.l.
+//
+//  @LICENSE_BEGIN@
+//  @LICENSE_END@
+//
+//  Giacomo Bernini       <g DOT bernini AT nextworks DOT it>
+//  Gino Carrozzo         <g DOT carrozzo AT nextworks DOT it>
+//  Nicola Ciulli         <n DOT ciulli AT nextworks DOT it>
+//  Francesco Salvestrini <f DOT salvestrini AT nextworks DOT it>
+//
+
+#ifndef TNRC_GENERIC_IDL
+#define TNRC_GENERIC_IDL
+
+#include "types.idl"
+#include "gmpls.idl"
+#include "tnrcCommon.idl"
+#include "tnrcSpecific.idl"
+
+module TNRC_AP {
+
+        interface NorthBound {
+
+                void
+                makeXC(inout Types::uint32            cookie,
+                       in    gmplsTypes::xconnSeq     inOutParams,
+                       in    TNRC::xcAction           action,
+                       in    boolean                  isVirtual,
+                       in    gmplsTypes::xcDirection  direction,
+                       in    Types::uint32            activate,
+                       in    Types::uint32            bandwidth,
+                       in    Types::uint32            rsrvCookie,
+                       in    long                     responseCtxt,
+                       in    long                     asyncCtxt)
+                        raises(Types::InternalProblems, TNRC::ParamError);
+
+                void
+                destroyXC(in Types::uint32  cookie,
+                          in Types::uint32  deactivate,
+                          in long           responseCtxt)
+                        raises(Types::InternalProblems, TNRC::ParamError);
+
+                void
+                reserveXC(inout Types::uint32             cookie,
+                          in    gmplsTypes::xconnSeq      inOutParams,
+                          in    TNRC::xcAction            action,
+                          in    boolean                   isVirtual,
+                          in    gmplsTypes::xcDirection   direction,
+                          in    Types::uint32             advanceRsrv,
+                          in    Types::uint32             bandwidth,
+                          in    long                      startTime,
+                          in    long                      endTime,
+                          in    long                      responseCtxt)
+                        raises(Types::InternalProblems, TNRC::ParamError);
+
+                void
+                unreserveXC(in Types::uint32  cookie,
+                            in long           responseCtxt)
+                        raises(Types::InternalProblems, TNRC::ParamError);
+
+                void
+                getXCList(out gmplsTypes::xcIdSeq xcs)
+                        raises(Types::InternalProblems, Types::CannotFetch);
+
+                void
+                getXCDetails(in  Types::uint32            xcId,
+                             out gmplsTypes::xcStatus     status,
+                             out gmplsTypes::xcDirection  dir,
+                             out gmplsTypes::DLinkId      dlinkIn,
+                             out gmplsTypes::labelId      labelIn,
+                             out gmplsTypes::DLinkId      dlinkOut,
+                             out gmplsTypes::labelId      labelOut)
+                        raises(Types::InternalProblems, Types::CannotFetch);
+
+                void
+                getEqptPowerConsumption(out gmplsTypes::powerType  powerCons)
+                        raises (Types::InternalProblems, Types::CannotFetch);
+
+                void
+                getDLinkList(out gmplsTypes::DLinkIdSeq dataLinks)
+                        raises(Types::InternalProblems, Types::CannotFetch);
+
+                void
+                getDLinkDetails(in  gmplsTypes::DLinkId         dataLink,
+                                out gmplsTypes::DLinkParameters params)
+                        raises(Types::InternalProblems, Types::CannotFetch);
+
+                void
+                getLabelList(in  gmplsTypes::DLinkId     dataLink,
+                             out gmplsTypes::labelIdSeq  labels)
+                        raises(Types::InternalProblems, Types::CannotFetch);
+
+                void
+                getLabelStatus(in  gmplsTypes::DLinkId    localDataLink,
+                               in  gmplsTypes::labelId    label,
+                               out gmplsTypes::labelState labelState,
+                               out gmplsTypes::operState  opState)
+                        raises(Types::InternalProblems, Types::CannotFetch);
+
+                void
+                getLabelFromDLink(in  gmplsTypes::DLinkId dataLink,
+                                  out gmplsTypes::labelId label)
+                        raises(Types::InternalProblems, Types::CannotFetch);
+
+                gmplsTypes::dataLinkCalendarSeq
+                getDLinkCalendar(in gmplsTypes::DLinkId dataLink,
+                                 in Types::uint32        startTime,
+                                 in Types::uint32        numOfEvents,
+                                 in Types::uint32        quantum)
+                        raises(Types::InternalProblems, Types::CannotFetch);
+
+                void
+                grsvpteIsUp()
+                        raises (Types::InternalProblems);
+
+                void
+                lrmIsUp()
+                        raises (Types::InternalProblems);
+        };
+
+        interface Presence {
+                void
+                register(in string          spName,
+                         in Types::uint32   maxTimeout,
+                         in TNRC_SP::Config spConfigRef,
+                         in TNRC_SP::XC     spXCRef)
+                        raises(Types::InternalProblems, TNRC::NotCapable);
+
+                void
+                unregister(in string spName)
+                        raises(Types::InternalProblems);
+        };
+
+        interface Config {
+
+                void
+                instanceStart()
+                        raises (Types::InternalProblems);
+
+                void
+                instanceStop()
+                        raises (Types::InternalProblems);
+
+                void
+                setEquipment(in TNRC::eqptDetails details)
+                        raises (Types::InternalProblems);
+
+                void
+                addEqpt(in TNRC::equipmentId       eId,
+                        in gmplsTypes::linkId      addr,
+                        in TNRC::equipmentType     eType,
+                        in gmplsTypes::operState   opSt,
+                        in gmplsTypes::adminState  admSt,
+                        in string                  location)
+                        raises (Types::InternalProblems, TNRC::ParamError);
+
+                void
+                addBoard(in TNRC::equipmentId        eId,
+                         in TNRC::boardId            bId,
+                         in gmplsTypes::switchingCap sCap,
+                         in gmplsTypes::encodingType eType,
+                         in gmplsTypes::operState    opSt,
+                         in gmplsTypes::adminState   admSt)
+                        raises (Types::InternalProblems, TNRC::ParamError);
+
+                void
+                addPort(in TNRC::equipmentId                 eId,
+                        in TNRC::boardId                     bId,
+                        in TNRC::portId                      pId,
+                        in gmplsTypes::linkId                remEqAddr,
+                        in TNRC::portId                      remPortId,
+                        in gmplsTypes::operState             opSt,
+                        in gmplsTypes::adminState            admSt,
+                        in Types::uint32                     lambdaBase,
+                        in Types::uint32                     lambdaCount,
+                        in Types::uint32                     bw,
+                        in gmplsTypes::portObscBwInfoSeq     subwavInfo,
+                        in gmplsTypes::protType              prot)
+                        raises (Types::InternalProblems, TNRC::ParamError);
+
+                void
+                addResource(in TNRC::equipmentId      eId,
+                            in TNRC::boardId          bId,
+                            in TNRC::portId           pId,
+                            in gmplsTypes::labelId    label,
+                            in gmplsTypes::operState  opSt,
+                            in gmplsTypes::adminState admSt,
+                            in gmplsTypes::labelState labelState)
+                        raises (Types::InternalProblems, TNRC::ParamError);
+
+                void
+                removeResource(in TNRC::equipmentId      eId,
+                               in TNRC::boardId          bId,
+                               in TNRC::portId           pId,
+                               in gmplsTypes::labelId    label)
+                        raises (Types::InternalProblems, TNRC::ParamError);
+
+
+                void
+                setEqptPowerConsumption(in TNRC::equipmentId      eId,
+                                        in gmplsTypes::powerType  powerCons)
+                        raises (Types::InternalProblems, TNRC::ParamError);
+
+                void
+                setPortPowerConsumption(in TNRC::equipmentId      eId,
+                                        in TNRC::boardId          bId,
+                                        in TNRC::portId           pId,
+                                        in gmplsTypes::powerType  powerCons)
+                        raises (Types::InternalProblems, TNRC::ParamError);
+
+                void
+                setPortBwReplanning(in TNRC::equipmentId              eId,
+                                    in TNRC::boardId                  bId,
+                                    in TNRC::portId                   pId,
+                                    in gmplsTypes::vlinkBwReplanInfo  bwInfo)
+                        raises (Types::InternalProblems, TNRC::ParamError);
+        };
+
+        interface Notifications {
+                void
+                xcResult(in Types::uint32      handle,
+                         in TNRC::xcResultCode result,
+                         in TNRC::xcErrorCode  error,
+                         in TNRC::xcSeq        selectedRes)
+                        raises (TNRC::XcNotFound,
+                                TNRC::InternalError,
+                                TNRC::GenericError);
+
+                void
+                asyncNotification(in TNRC::notificationSeq events)
+                        raises (TNRC::XcNotFound,
+                                TNRC::InternalError,
+                                TNRC::GenericError);
+        };
+};
+
+#endif

@@ -1,0 +1,1 @@
+scp gmpls@150.254.171.167:/opt/psnc/SecurityConnector/aai/secgwcorbaservice/bin/AaiServer.ior /tmp

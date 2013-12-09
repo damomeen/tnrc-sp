@@ -1,0 +1,23 @@
+#ifndef __DATADIST_IDL__
+#define __DATADIST_IDL__
+
+module SecGateway
+{
+  typedef sequence <octet> secvalue;
+  typedef unsigned long uint32;
+
+  interface AaiServer{
+    boolean authorizeAction (in secvalue token,
+                  in string subject_Role, in string resource_Id, in string resource_Type, in string action);
+
+    secvalue authenticate ( in string login,
+                  in string password);
+
+    boolean createSecurityData ( in uint32 num1,
+                  in uint32 num2 );
+
+    boolean createSessionContext ( in uint32 num1,
+                  in uint32 num2);
+   };
+};
+#endif

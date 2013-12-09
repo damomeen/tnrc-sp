@@ -1,0 +1,6 @@
+module CLIENT {
+
+        interface Config {
+                void init();
+        };
+};

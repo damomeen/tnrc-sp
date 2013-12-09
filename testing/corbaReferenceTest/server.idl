@@ -1,0 +1,12 @@
+//Forward declaration
+//module CLIENT {
+//        interface Config;
+//};
+#include "client.idl"
+
+module SERVER {
+        interface Presence {
+                void
+                register(in string name, in CLIENT::Config configRef);
+        };
+};

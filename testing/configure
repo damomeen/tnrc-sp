@@ -1,0 +1,16 @@
+#!/bin/bash
+# -*- sh -*-
+
+#
+#
+# (C) 2011 PSNC
+#
+# Authors:
+#     Damian Parniewicz (PSNC) <damianp_at_man.poznan.pl>
+#
+
+if [ ! -e licl-stub.conf ]
+then
+    cp licl-stub.conf.sample licl-stub.conf
+    echo "File licl-stub.conf created"
+fi

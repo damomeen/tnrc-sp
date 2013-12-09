@@ -1,0 +1,66 @@
+"""
+For TNRC-SP all configuration is related to communication interfaces used by the module.
+Commenting or deleting some part of configuration means that part of TNRC-SP functinality will be disabled.
+The explanation of configuration parameters is presented in form of comments ('#') within a configuration file. 
+"""
+
+INTERFACES = {
+    'clients': # contains configuration for used clients towards others modules
+    {
+        'rest-CCI': # configuration of client towards Upper-LICL CCI interface
+        {
+            'address':'localhost',  # address of Upper-LICL CCI interface server
+            'port': 8011,   # port of Upper-LICL CCI interface server
+            'nodeId': '1',    # identifier of virtual node from VI which is to be controlled by GMPLS+ controller
+            'ssl': False,     # is SSL connection to be used
+            'timeout': 10,  # timeout for HTTP responses
+        },
+        'tnrcapConfig': # configuration of client towards TNRC-AP config interface
+        {
+            'iorName': '/opt/gmpls_ctrl_core/var/gmpls/tnrc_conf.ior', # location of IOR file
+        },
+        'tnrcapPresence': # configuration of client towards TNRC-AP presence interface
+        {
+            'iorName': '/opt/gmpls_ctrl_core/var/gmpls/tnrc_presence.ior', # location of IOR file
+        },
+        'tnrcapNotification': # configuration of client towards TNRC-AP notification interface
+        {
+            'iorName': '/opt/gmpls_ctrl_core/var/gmpls/tnrc_notif.ior', # location of IOR file
+        },
+        'LRM': # configuration of client towards LRM interface
+        {
+            'iorName': '/opt/gmpls_ctrl_core/var/gmpls/lrm.ior', # location of IOR file
+        },
+        
+        #'AaiAuthentication': # configuration of client towards AAI service
+        #{
+        #    'iorName': '/tmp/AaiServer.ior', # location of IOR file
+        #    'user': 'Canh', # user used for authentication over CCI
+        #    'passwd': '123456', # passworld used for authentication over CCI
+        #},
+    },
+    'servants': # contains configuration for services provided by TNRC-SP module
+    {
+        'rest-CCI': # configuration of TNRC-SP CCI service
+        {
+            'port': 8010, # port used by TNRC-SP CCI service
+            'ssl': False, # is SSL used by TNRC-SP CCI service
+            'certFilesDir':'/home/user/geysers-wp4/branches/python_modules/myModule/ssl/' # location of SSL certification files
+        },
+        'tnrcap':  # configuration of TNRC-SP XC service
+        {
+            'timeout': 10, # timeout for handling of service requests within TNRC-SP module
+        },
+        'rest-Info': # configuration of INFO service required by VRM-SP module
+        {
+            'port':7010, # port used by INFO service
+            'ssl': False, # is SSL used by INFO service
+        },
+        'xc-Info': # configuration of XC-INFO service required by demonstrations slides
+        {
+            'port':9090,  # port used by XC-INFO service
+            'ssl': False,  # is SSL used by XC-INFO service
+        },
+    },
+    'testing': False,  # when True TNRC-SP will try to register in TNRC-AP
+}

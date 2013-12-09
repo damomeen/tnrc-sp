@@ -1,0 +1,177 @@
+GET /geysers.eu/cci/node/1 HTTP/1.1
+Host: localhost:8011
+Accept-Encoding: identity
+Content-type: text/xml
+
+HTTP/1.0 200 OK
+Date: Mon, 04 Jul 2011 09:59:41 GMT
+Server: WSGIServer/0.1 Python/2.6.6
+Vary: Accept
+Content-Length: 149
+Content-Type: text/xml; charset=UTF-8
+Content-MD5: 06dba192a2acea33bf526e4dcf2bde45
+
+<?xml version="1.0" encoding="UTF-8"?><node><energyConsumption>10</energyConsumption><boardID>1</boardID><operativeStatus>up</operativeStatus></node>
+
+GET /geysers.eu/cci/node/1/board/1 HTTP/1.1
+Host: localhost:8011
+Accept-Encoding: identity
+Content-type: text/xml
+
+HTTP/1.0 200 OK
+Date: Mon, 04 Jul 2011 09:59:41 GMT
+Server: WSGIServer/0.1 Python/2.6.6
+Vary: Accept
+Content-Length: 257
+Content-Type: text/xml; charset=UTF-8
+Content-MD5: 8d3653d9eabc3e6cccbc2c46f876ee17
+
+<?xml version="1.0" encoding="UTF-8"?><board><techParams><Switching_Capability>FSC</Switching_Capability><Encoding_Type>Frame</Encoding_Type></techParams><adminStatus>enabled</adminStatus><opStatus>up</opStatus><portID>10</portID><portID>20</portID></board>
+
+
+GET /geysers.eu/cci/node/1/board/1/port/10 HTTP/1.1
+Host: localhost:8011
+Accept-Encoding: identity
+Content-type: text/xml
+
+HTTP/1.0 200 OK
+Date: Mon, 04 Jul 2011 09:59:41 GMT
+Server: WSGIServer/0.1 Python/2.6.6
+Vary: Accept
+Content-Length: 289
+Content-Type: text/xml; charset=UTF-8
+Content-MD5: f63010ed35977cdf9a2b50c1f8d170c7
+
+<?xml version="1.0" encoding="UTF-8"?><port><maxBw>10000.0</maxBw><resourceID>100</resourceID><resourceID>101</resourceID><maxResvBw>1000.0</maxResvBw><opStatus>up</opStatus><energyConsumption>87</energyConsumption><bwMinChunck>10.0</bwMinChunck><protectionType>1:1</protectionType></port>
+
+GET /geysers.eu/cci/node/1/board/1/port/10/resource/100 HTTP/1.1
+Host: localhost:8011
+Accept-Encoding: identity
+Content-type: text/xml
+
+HTTP/1.0 200 OK
+Date: Mon, 04 Jul 2011 09:59:41 GMT
+Server: WSGIServer/0.1 Python/2.6.6
+Vary: Accept
+Content-Length: 188
+Content-Type: text/xml; charset=UTF-8
+Content-MD5: 921b0cfc476187f39b5cd71c38a25a5d
+
+<?xml version="1.0" encoding="UTF-8"?><resource><adminStatus>enabled</adminStatus><resourceValue>123</resourceValue><opStatus>up</opStatus><resourceStatus>xcvsd</resourceStatus></resource>
+
+GET /geysers.eu/cci/node/1/board/1/port/10/resource/101 HTTP/1.1
+Host: localhost:8011
+Accept-Encoding: identity
+Content-type: text/xml
+
+HTTP/1.0 200 OK
+Date: Mon, 04 Jul 2011 09:59:41 GMT
+Server: WSGIServer/0.1 Python/2.6.6
+Vary: Accept
+Content-Length: 190
+Content-Type: text/xml; charset=UTF-8
+Content-MD5: b22d199d3293ebcb3bd7bbfc58e1d499
+
+<?xml version="1.0" encoding="UTF-8"?><resource><adminStatus>enabled</adminStatus><resourceValue>345</resourceValue><opStatus>down</opStatus><resourceStatus>xcvsd</resourceStatus></resource>
+
+
+GET /geysers.eu/cci/node/1/board/1/port/20 HTTP/1.1
+Host: localhost:8011
+Accept-Encoding: identity
+Content-type: text/xml
+
+HTTP/1.0 200 OK
+Date: Mon, 04 Jul 2011 09:59:41 GMT
+Server: WSGIServer/0.1 Python/2.6.6
+Vary: Accept
+Content-Length: 289
+Content-Type: text/xml; charset=UTF-8
+Content-MD5: b3dcd195bf1d940bfc003e5a16f9fad8
+
+<?xml version="1.0" encoding="UTF-8"?><port><maxBw>10000.0</maxBw><resourceID>200</resourceID><resourceID>201</resourceID><maxResvBw>1000.0</maxResvBw><opStatus>up</opStatus><energyConsumption>87</energyConsumption><bwMinChunck>10.0</bwMinChunck><protectionType>1:1</protectionType></port>
+
+
+GET /geysers.eu/cci/node/1/board/1/port/20/resource/200 HTTP/1.1
+Host: localhost:8011
+Accept-Encoding: identity
+Content-type: text/xml
+
+HTTP/1.0 200 OK
+Date: Mon, 04 Jul 2011 09:59:41 GMT
+Server: WSGIServer/0.1 Python/2.6.6
+Vary: Accept
+Content-Length: 188
+Content-Type: text/xml; charset=UTF-8
+Content-MD5: 921b0cfc476187f39b5cd71c38a25a5d
+
+<?xml version="1.0" encoding="UTF-8"?><resource><adminStatus>enabled</adminStatus><resourceValue>123</resourceValue><opStatus>up</opStatus><resourceStatus>xcvsd</resourceStatus></resource>
+
+GET /geysers.eu/cci/node/1/board/1/port/20/resource/201 HTTP/1.1
+Host: localhost:8011
+Accept-Encoding: identity
+Content-type: text/xml
+
+HTTP/1.0 200 OK
+Date: Mon, 04 Jul 2011 09:59:41 GMT
+Server: WSGIServer/0.1 Python/2.6.6
+Vary: Accept
+Content-Length: 190
+Content-Type: text/xml; charset=UTF-8
+Content-MD5: b22d199d3293ebcb3bd7bbfc58e1d499
+
+<?xml version="1.0" encoding="UTF-8"?><resource><adminStatus>enabled</adminStatus><resourceValue>345</resourceValue><opStatus>down</opStatus><resourceStatus>xcvsd</resourceStatus></resource>
+
+
+POST /geysers.eu/cci/node/1/xc HTTP/1.1
+Host: localhost:8011
+Accept-Encoding: identity
+Content-Length: 482
+Content-type: text/xml
+
+<?xml version="1.0" encoding="UTF-8"?><crossConnection><status>Creation</status><direction>bidirectional</direction><resourceIn><boardID>0</boardID><resourceID>1</resourceID><portID>1</portID></resourceIn><securityContext><authZToken>token</authZToken><sessionContext>context</sessionContext><authNToken>token</authNToken><securityData>data</securityData></securityContext><resourceOut><boardID>0</boardID><resourceID>2</resourceID><portID>2</portID></resourceOut></crossConnection>
+
+HTTP/1.0 202 Accepted
+Date: Mon, 04 Jul 2011 09:59:42 GMT
+Server: WSGIServer/0.1 Python/2.6.6
+Content-Length: 0
+Vary: Accept
+Expires: Mon, 04 Jul 2011 10:00:42 GMT
+Location: http://localhost:8011/geysers.eu/cci/node/1/xc/3464060760
+Content-MD5: d41d8cd98f00b204e9800998ecf8427e
+
+PUT /geysers.eu/cci/node/1/xc/3464060760/status HTTP/1.1
+Host: localhost:8010
+Accept-Encoding: identity
+Content-Length: 62
+Content-type: text/xml
+
+<?xml version="1.0" encoding="UTF-8"?><status>Working</status>
+
+HTTP/1.0 200 OK
+
+DELETE /geysers.eu/cci/node/1/xc/3464060760 HTTP/1.1
+Host: localhost:8011
+Accept-Encoding: identity
+Content-Length: 206
+Content-type: text/xml
+
+HTTP/1.0 202 Accepted
+Date: Mon, 04 Jul 2011 09:59:45 GMT
+Server: WSGIServer/0.1 Python/2.6.6
+Content-Length: 0
+Vary: Accept
+Expires: Mon, 04 Jul 2011 10:00:45 GMT
+Content-MD5: d41d8cd98f00b204e9800998ecf8427e
+
+<?xml version="1.0" encoding="UTF-8"?><securityContext><authZToken>token</authZToken><sessionContext>context</sessionContext><authNToken>token</authNToken><securityData>data</securityData></securityContext>
+
+
+PUT /geysers.eu/cci/node/1/xc/3464060760/status HTTP/1.1
+Host: localhost:8010
+Accept-Encoding: identity
+Content-Length: 62
+Content-type: text/xml
+
+<?xml version="1.0" encoding="UTF-8"?><status>Deleted</status>
+
+HTTP/1.0 200 OK

@@ -1,0 +1,651 @@
+//
+//  This file is part of gmpls-nextworks
+//
+//  Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Nextworks s.r.l.
+//
+//  @LICENSE_BEGIN@
+//  @LICENSE_END@
+//
+//  Giacomo Bernini       <g DOT bernini AT nextworks DOT it>
+//  Gino Carrozzo         <g DOT carrozzo AT nextworks DOT it>
+//  Nicola Ciulli         <n DOT ciulli AT nextworks DOT it>
+//  Francesco Salvestrini <f DOT salvestrini AT nextworks DOT it>
+//
+
+#ifndef LRM_IDL
+#define LRM_IDL
+
+#include "types.idl"
+#include "gmpls.idl"
+
+module LRM {
+
+        interface Global {
+                exception InternalProblems      { };
+                exception UnknownTna            { };
+                exception NoSingleUniNbr        { };
+                exception WrongId               { };
+                exception NoId                  { };
+                exception ExistingId            { };
+                exception WrongAdjType          { };
+
+                // XXX-FIXME: obsolete (to be removed ASAP), please use setNodeId instead
+                void
+                setRid(in gmplsTypes::nodeId  node,
+                       in gmplsTypes::adjType type)
+                        raises (InternalProblems);
+
+                void
+                setNodeId(in gmplsTypes::nodeId  node,
+                          in gmplsTypes::adjType type)
+                        raises (InternalProblems,
+                                WrongId,
+                                WrongAdjType,
+                                ExistingId);
+
+		void
+		setOperatorId(in gmplsTypes::operatorId	operator)
+			raises (InternalProblems,
+				WrongId);
+
+                void
+                getNodeData(out gmplsTypes::nodeData type)
+                        raises (InternalProblems,
+                                WrongId,
+                                WrongAdjType,
+                                ExistingId);
+
+                void
+                updateNodeData(in gmplsTypes::nodeData data)
+                        raises (InternalProblems);
+
+                // matches old nodeId in phosphorus
+                gmplsTypes::nodeId
+                getNodeIdPerAdj(in gmplsTypes::adjType type)
+                        raises (InternalProblems,
+                                WrongAdjType,
+                                NoId);
+
+                gmplsTypes::nodeId
+                getNodeId()
+                        raises (InternalProblems,
+                                WrongAdjType,
+                                NoId);
+
+		gmplsTypes::operatorId
+		getOperatorId()
+			raises (InternalProblems,
+				NoId);
+
+                // XXX-FIXME: obsolete (to be removed ASAP), please use getNodeId instead
+                gmplsTypes::nodeId
+                getAdjNodeId(in gmplsTypes::adjType type)
+                        raises (InternalProblems);
+
+                // matches old scngw_isup in phosphorus
+                void
+                scngwIsup()
+                        raises (InternalProblems);
+
+                // matches old NbrNodeIdFromTna in phosphorus
+                gmplsTypes::nodeId
+                getNbrNodeIdFromTna(in gmplsTypes::tnaId tna)
+                        raises (InternalProblems, UnknownTna);
+
+                // matches old SingleUniNbrNodeId in phosphorus
+                gmplsTypes::nodeId
+                getSingleUniNbrNodeId()
+                        raises (InternalProblems,
+                                NoSingleUniNbr);
+
+        };
+
+        interface ScnIf {
+
+                struct ScnIfData {
+                        gmplsTypes::addr       address;
+                        gmplsTypes::ifType     typee;
+                        gmplsTypes::adminState admState;
+                };
+                typedef sequence<ScnIfData> scnIfSeq;
+
+                exception InternalProblems  { };
+                exception UnknownScnIf      { };
+                exception ExistingScnIf     { };
+                exception WrongState        { };
+                exception WrongScnIfType    { };
+
+                // set
+                void
+                add(in gmplsTypes::addr   addr,
+                    in gmplsTypes::ifType type)
+                        raises (InternalProblems,
+                                UnknownScnIf,
+                                ExistingScnIf,
+                                WrongScnIfType);
+
+                void
+                del(in gmplsTypes::addr addr)
+                        raises (InternalProblems,
+                                UnknownScnIf,
+                                WrongState);
+
+                void
+                setAdm(in gmplsTypes::addr       addr,
+                       in gmplsTypes::adminState admState)
+                        raises (InternalProblems,
+                                UnknownScnIf);
+
+                // get
+                scnIfSeq getAll()
+                        raises (InternalProblems);
+
+        };
+
+        interface ControlChannel {
+
+                struct ControlChannelData {
+                        gmplsTypes::ccId         id;
+                        gmplsTypes::addr         locScnIfAddr;
+                        gmplsTypes::addr         remScnIfAddr;
+                        gmplsTypes::statesBundle states;
+                };
+                typedef sequence<gmplsTypes::ccId>  ccIdSeq;
+                typedef sequence<ControlChannelData> ccSeq;
+
+                exception InternalProblems      { };
+                exception UnknownCtrlChannel    { };
+                exception UnknownCtrlChannelIds { ccIdSeq ids; };
+                exception WrongCcId             { };
+                exception ExistingCtrlChannel   { };
+                exception UnknownLocalScnIf     { };
+                exception WrongState            { };
+
+                // set
+                void
+                add(in gmplsTypes::ccId         id,
+                    in gmplsTypes::addr         locScnIfAddr,
+                    in gmplsTypes::addr         remScnIfAddr)
+                        raises (InternalProblems,
+                                WrongCcId,
+                                ExistingCtrlChannel,
+                                UnknownLocalScnIf);
+
+                void
+                del(in gmplsTypes::ccId ccId)
+                        raises (InternalProblems,
+                                UnknownCtrlChannel,
+                                WrongCcId,
+                                WrongState);
+
+                void
+                setAdm(in gmplsTypes::ccId       ccId,
+                       in gmplsTypes::adminState admState)
+                        raises (InternalProblems,
+                                UnknownCtrlChannel,
+                                WrongCcId);
+
+                void
+                setOp(in gmplsTypes::ccId      ccId,
+                      in gmplsTypes::operState opState)
+                        raises (InternalProblems,
+                                UnknownCtrlChannel,
+                                WrongCcId);
+
+                // get
+                ccIdSeq getAllId()
+                        raises (InternalProblems);
+
+                ccSeq getAll()
+                        raises (InternalProblems);
+
+                void
+                get(inout ccSeq ccSequence)
+                        raises (InternalProblems,
+                                UnknownCtrlChannelIds,
+                                WrongCcId);
+        };
+
+        interface DataLink {
+                exception InternalProblems      { };
+                exception UnknownDLink          { };
+                exception ExistingDLink         { };
+                exception UnknownNodeId         { };
+                exception WrongState            { };
+                exception UnknownDLinkIdentity  { gmplsTypes::DLinkId    id;  };
+                exception UnknownDLinkIds       { gmplsTypes::DLinkIdSeq ids; };
+                exception NoTELink              { };
+
+                // set
+                void
+                add(in gmplsTypes::DLinkId lclDlId,
+                    in gmplsTypes::DLinkId remDlId)
+                        raises (InternalProblems,
+                                ExistingDLink);
+
+                void
+                del(in gmplsTypes::DLinkId dlId)
+                        raises (InternalProblems,
+                                UnknownDLink,
+                                WrongState);
+
+                void
+                setAdm(in gmplsTypes::DLinkId    dlId,
+                       in gmplsTypes::adminState admState)
+                        raises (InternalProblems,
+                                UnknownDLink,
+                                WrongState);
+
+                void
+                setOp(in gmplsTypes::DLinkId   dlId,
+                      in gmplsTypes::operState opState)
+                        raises (InternalProblems,
+                                UnknownDLink,
+                                WrongState);
+
+                // matches old updateDLinkDetails in phosphorus
+                void
+                updateData(in gmplsTypes::DLinkId         datalink,
+                           in gmplsTypes::DLinkParameters params)
+                        raises (InternalProblems,
+                                UnknownDLink);
+
+                // get
+
+                // matches old TELinkFromDLink in phosphorus
+                gmplsTypes::TELinkId
+                getTELink(in gmplsTypes::DLinkId datalink)
+                        raises (InternalProblems,
+                                UnknownDLink,
+                                NoTELink);
+
+                // matches old getDataLinkStatus in phosphorus
+                void
+                getStatus(in  gmplsTypes::DLinkId         datalink,
+                          out gmplsTypes::statesBundle    states)
+                        raises (InternalProblems,
+                                UnknownDLink,
+                                WrongState);
+
+                // matches old localDLinkIdFromRemoteDLinkId in phosphorus
+                void
+                getFromRemoteId(in  gmplsTypes::nodeId       nodeId,
+                                in  gmplsTypes::DLinkId      remoteDLink,
+                                out gmplsTypes::DLinkId      localDLink,
+                                out gmplsTypes::statesBundle states)
+                        raises (InternalProblems,
+                                UnknownDLink,
+                                UnknownNodeId,
+                                WrongState);
+
+                gmplsTypes::DLinkIdSeq
+                getAllId()
+                        raises (InternalProblems);
+
+                gmplsTypes::DLinkDataSeq
+                getAll()
+                        raises (InternalProblems);
+
+                // matches old DLinksData in phosphorus
+                void
+                get(inout gmplsTypes::DLinkDataSeq datalinks)
+                        raises (InternalProblems,
+                                UnknownDLinkIds);
+
+        };
+
+        interface TeLink {
+
+                typedef Types::uint8            SRLGId;
+
+                exception InternalProblems      { };
+                exception UnknownTELink         { };
+                exception ExistingTELink        { };
+                exception WrongAdjType          { };
+                exception WrongState            { };
+                exception WrongCCState          { };
+                exception WrongDLinkState       { };
+                exception UnknownDLink          { };
+                exception UnknownCC             { };
+                exception NoDLinks              { };
+                exception NoTELinks             { };
+                exception TELinkDown            { };
+                exception UnknownTna            { };
+                exception UnknownAdjId          { };
+                exception UnknownNodeId         { };
+                exception UnknownTELinkIdentity { gmplsTypes::TELinkId id; };
+                exception UnknownTELinkIds      { gmplsTypes::TELinkIdSeq ids;};
+
+                // set
+                void
+                add(in gmplsTypes::TELinkId       lclTeLinkId,
+                    in gmplsTypes::TELinkId       remTeLinkId,
+                    in gmplsTypes::nodeId         remNodeId,
+                    in gmplsTypes::adjType        adjType)
+                        raises (InternalProblems,
+                                ExistingTELink,
+                                WrongAdjType);
+
+                void
+                del(in gmplsTypes::TELinkId telId)
+                        raises (InternalProblems,
+                                UnknownTELink,
+                                WrongState);
+
+                void
+                setAdm(in gmplsTypes::TELinkId   telId,
+                       in gmplsTypes::adminState admState)
+                        raises (InternalProblems,
+                                UnknownTELink);
+
+                void
+                setOp(in gmplsTypes::TELinkId  telId,
+                      in gmplsTypes::operState opState)
+                        raises (InternalProblems,
+                                UnknownTELink);
+
+                void
+                bundle(in gmplsTypes::TELinkId telId)
+                        raises (InternalProblems,
+                                UnknownTELink);
+
+                void
+                bind(in gmplsTypes::TELinkId telId,
+                     in gmplsTypes::nodeId ccId)
+                        raises (InternalProblems,
+                                UnknownTELink,
+                                UnknownCC,
+                                WrongCCState);
+
+                void
+                unbind(in gmplsTypes::TELinkId telId,
+                       in gmplsTypes::nodeId ccId)
+                        raises (InternalProblems,
+                                UnknownTELink,
+                                UnknownCC);
+
+                void
+                addDataLink(in gmplsTypes::TELinkId telId,
+                            in gmplsTypes::DLinkId dlId)
+                        raises (InternalProblems,
+                                UnknownTELink,
+                                UnknownDLink,
+                                WrongDLinkState);
+
+                void
+                removeDataLink(in gmplsTypes::TELinkId telId,
+                               in gmplsTypes::DLinkId dlId)
+                        raises (InternalProblems,
+                                UnknownTELink,
+                                UnknownDLink);
+
+                void
+                setMetric(in gmplsTypes::TELinkId telId,
+                          in Types::uint32 metric)
+                        raises (InternalProblems,
+                                UnknownTELink);
+
+                void
+                setColor(in gmplsTypes::TELinkId telId,
+                         in Types::uint32 colorMask)
+                        raises (InternalProblems,
+                                UnknownTELink);
+
+                void
+                setProtection(in gmplsTypes::TELinkId telId,
+                              in Types::uint8 protectionMask)
+                        raises (InternalProblems,
+                                UnknownTELink);
+
+                void
+                addSRLG(in gmplsTypes::TELinkId telId,
+                        in SRLGId srlg)
+                        raises (InternalProblems,
+                                UnknownTELink);
+
+                void
+                removeSRLG(in gmplsTypes::TELinkId telId,
+                           in SRLGId srlg)
+                        raises (InternalProblems, UnknownTELink);
+
+                void
+                setTna(in gmplsTypes::TELinkId telId,
+                       in gmplsTypes::tnaId    tnaId)
+                        raises (InternalProblems,
+                                UnknownTELink);
+
+                void
+                setRemRcId(in gmplsTypes::TELinkId telId,
+                           in gmplsTypes::nodeId   remRcId)
+                        raises (InternalProblems,
+                                UnknownTELink);
+
+                // get
+
+                // matches old DLinkFromTELink in phosphorus (remove it ASAP)
+                gmplsTypes::DLinkId
+                getFirstDataLinkUp(in gmplsTypes::TELinkId telink)
+                        raises (InternalProblems,
+                                UnknownTELink,
+                                NoDLinks);
+
+                // matches old TELinksData in phosphorus
+                void
+                get(inout gmplsTypes::TELinkDataSeq telinks)
+                        raises (InternalProblems,
+                                UnknownTELinkIds);
+
+                // matches old allTELinkIds in phosphorus
+                gmplsTypes::TELinkIdSeq
+                getAllId()
+                        raises (InternalProblems);
+
+                gmplsTypes::TELinkDataSeq
+                getAll()
+                        raises (InternalProblems);
+
+                // matches old allTELinks in phosphorus
+                gmplsTypes::TELinkDataSeq
+                getFromAdjType(in gmplsTypes::adjType type)
+                        raises (InternalProblems,
+                                NoTELinks,
+                                WrongAdjType);
+
+                // matches old checkTELinkId in phosphorus
+                void
+                check(in gmplsTypes::TELinkId telink)
+                        raises (InternalProblems,
+                                UnknownTELink,
+                                TELinkDown);
+
+                // matches old getTELinkStatus in phosphorus
+                void
+                getStatus(in  gmplsTypes::TELinkId     telink,
+                          out gmplsTypes::statesBundle states)
+                        raises (InternalProblems,
+                                UnknownTELink);
+
+                // matches old adjTELinks in phosphorus
+                gmplsTypes::TELinkIdSeq
+                getAllIdsFromAdj(in gmplsTypes::adjacencyId adjacency)
+                        raises (InternalProblems,
+                                UnknownAdjId);
+
+                // matches old NodeIdFromTELink in phosphorus
+                gmplsTypes::nodeId
+                getNodeId(in gmplsTypes::TELinkId telink)
+                        raises (InternalProblems,
+                                UnknownTELink);
+
+                // matches old TELinkFromTna in phosphorus
+                gmplsTypes::TELinkId
+                getFromTna(in gmplsTypes::tnaId tna)
+                        raises (InternalProblems,
+                                UnknownTna);
+
+                // matches old TELinkFromRemNodeId in phosphorus
+                gmplsTypes::TELinkId
+                getFromRemNodeId(in gmplsTypes::nodeId node)
+                        raises (InternalProblems,
+                                UnknownNodeId,
+                                NoTELinks);
+
+        };
+
+        interface Adjacency {
+                typedef sequence<gmplsTypes::adjacencyId>  adjIdSeq;
+
+                struct AdjData {
+                        gmplsTypes::adjacencyId id;
+                        gmplsTypes::nodeId      remNodeId;
+                        gmplsTypes::adjType     typee;
+                };
+
+                typedef sequence<AdjData> adjSeq;
+
+                exception InternalProblems    { };
+                exception UnknownAdjacencyIds { adjIdSeq ids; };
+
+                adjIdSeq getAllId()
+                        raises (InternalProblems);
+
+                adjSeq getAll()
+                        raises (InternalProblems);
+
+                void
+                get(inout adjSeq adjSequence)
+                        raises (InternalProblems,
+                                UnknownAdjacencyIds);
+        };
+
+        // Interface left for backward compatibility only, it will be obsoleted ASAP
+        interface Info {
+
+                exception InternalProblems      { };
+                exception UnknownTELinkIdentity { gmplsTypes::TELinkId id; };
+                exception UnknownDLinkIdentity  { gmplsTypes::DLinkId  id; };
+                exception UnknownTELink         { };
+                exception UnknownDLink          { };
+                exception UnknownTna            { };
+                exception UnknownAdjId          { };
+                exception UnknownNodeId         { };
+                exception NoTELinks             { };
+                exception NoDLinks              { };
+                exception TELinkDown            { };
+                exception NoSingleUniNbr        { };
+                exception Deprecated            { };
+
+                void
+                localDLinkIdFromRemoteDLinkId(in  gmplsTypes::nodeId     nodeId,
+                                              in  gmplsTypes::DLinkId    remoteDLink,
+                                              out gmplsTypes::DLinkId    localDLink,
+                                              out gmplsTypes::operState  operState,
+                                              out gmplsTypes::adminState adminState)
+                        raises (InternalProblems,
+                                UnknownDLink,
+                                UnknownNodeId);
+
+                gmplsTypes::TELinkId
+                TELinkFromDLink(in gmplsTypes::DLinkId datalink)
+                        raises (InternalProblems,
+                                UnknownDLink);
+
+                gmplsTypes::DLinkId
+                DLinksInDLink(in gmplsTypes::DLinkIdSeq datalinks)
+                        raises (InternalProblems,
+                                UnknownDLink);
+
+                gmplsTypes::DLinkId
+                DLinkFromTELink(in gmplsTypes::TELinkId telink)
+                        raises (InternalProblems,
+                                UnknownTELink,
+                                NoDLinks);
+
+                void
+                TELinksData(inout gmplsTypes::TELinkDataSeq telinks)
+                        raises (InternalProblems,
+                                UnknownTELinkIdentity);
+
+                void
+                DLinksData(inout gmplsTypes::DLinkDataSeq datalinks)
+                        raises (InternalProblems,
+                                UnknownDLinkIdentity);
+
+                gmplsTypes::TELinkIdSeq
+                allTELinkIds()
+                        raises (InternalProblems);
+
+                gmplsTypes::TELinkDataSeq
+                allTELinks(in gmplsTypes::adjType type)
+                        raises (InternalProblems,
+                                NoTELinks);
+
+                void
+                checkTELinkId(in gmplsTypes::TELinkId telink)
+                        raises (InternalProblems,
+                                TELinkDown);
+
+                void
+                getTELinkStatus(in  gmplsTypes::TELinkId   telink,
+                                out gmplsTypes::operState  operState,
+                                out gmplsTypes::adminState adminState)
+                        raises (InternalProblems,
+                                UnknownTELink);
+
+                void
+                getDataLinkStatus(in  gmplsTypes::DLinkId    datalink,
+                                  out gmplsTypes::operState  operState,
+                                  out gmplsTypes::adminState adminState)
+                        raises (InternalProblems,
+                                UnknownDLink);
+
+                gmplsTypes::TELinkIdSeq
+                adjTELinks(in gmplsTypes::adjacencyId adjacency)
+                        raises (InternalProblems,
+                                UnknownAdjId);
+
+                gmplsTypes::nodeId
+                NodeIdFromTELink(in gmplsTypes::TELinkId telink)
+                        raises (InternalProblems,
+                                UnknownTELink);
+
+                gmplsTypes::nodeId
+                NbrNodeIdFromTna(in gmplsTypes::tnaId tna)
+                        raises (InternalProblems,
+                                UnknownTna);
+
+                gmplsTypes::nodeId
+                SingleUniNbrNodeId()
+                        raises (InternalProblems,
+                                NoSingleUniNbr);
+
+                gmplsTypes::TELinkId
+                TELinkFromTna(in gmplsTypes::tnaId tna)
+                        raises (InternalProblems,
+                                UnknownTna);
+
+                gmplsTypes::TELinkId
+                TELinkFromRemNodeId(in gmplsTypes::nodeId node)
+                        raises (InternalProblems,
+                                UnknownNodeId,
+                                NoTELinks);
+
+                gmplsTypes::nodeId
+                nodeId()
+                        raises (InternalProblems);
+
+                void
+                scngw_isup()
+                        raises (InternalProblems);
+
+                void
+                updateDLinkDetails(in gmplsTypes::DLinkId         datalink,
+                                   in gmplsTypes::DLinkParameters params)
+                        raises (InternalProblems,
+                                UnknownDLink);
+
+        };
+
+};
+
+#endif

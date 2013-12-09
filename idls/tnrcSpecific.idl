@@ -1,0 +1,96 @@
+//
+//  This file is part of gmpls-nextworks
+//
+//  Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Nextworks s.r.l.
+//
+//  @LICENSE_BEGIN@
+//  @LICENSE_END@
+//
+//  Giacomo Bernini       <g DOT bernini AT nextworks DOT it>
+//  Gino Carrozzo         <g DOT carrozzo AT nextworks DOT it>
+//  Nicola Ciulli         <n DOT ciulli AT nextworks DOT it>
+//  Francesco Salvestrini <f DOT salvestrini AT nextworks DOT it>
+//
+
+#ifndef TNRC_SPECIFIC_IDL
+#define TNRC_SPECIFIC_IDL
+
+#include "types.idl"
+#include "gmpls.idl"
+#include "tnrcCommon.idl"
+
+module TNRC_SP {
+
+        exception EqptLinkDown  { string  what; };
+        exception ParamError    { string  what; };
+        exception NotCapable    { string  what; };
+        exception BusyResources { string  what; };
+        exception InternalError { string  what; };
+        exception GenericError  { string  what; };
+        exception XcNotFound    { string  what; };
+
+        interface Config {
+                void init(inout Types::uint32 max_timeout)
+                        raises (ParamError, NotCapable,
+                                InternalError, GenericError);
+        };
+
+        interface XC {
+                void make(inout Types::uint32            handle,
+                          in    TNRC::xcSeq              inOutRes,
+                          in    gmplsTypes::xcDirection  direction,
+                          in    boolean                  isVirtual,
+                          in    boolean                  activate,
+                          in    TNRC::xcAction           action,
+                          out   Types::uint32            timeout)
+                        raises (EqptLinkDown, ParamError, NotCapable,
+                                BusyResources,
+                                InternalError, GenericError);
+
+                void destroy(in Types::uint32  handle,
+                             in boolean        isVirtual,
+                             in boolean        deactivate,
+                             out Types::uint32 timeout)
+                        raises (EqptLinkDown, ParamError, NotCapable,
+                                XcNotFound, BusyResources,
+                                InternalError, GenericError);
+
+                void reserve(inout Types::uint32           handle,
+                             in    TNRC::xcSeq             inOutRes,
+                             in    gmplsTypes::xcDirection direction,
+                             in    boolean                 isVirtual,
+                             in    TNRC::xcAction          action,
+                             out   Types::uint32           timeout)
+                        raises (EqptLinkDown, ParamError, NotCapable,
+                                BusyResources,
+                                InternalError, GenericError);
+
+                void unreserve(in Types::uint32  handle,
+                               in boolean        isVirtual,
+                               out Types::uint32 timeout)
+                        raises (EqptLinkDown, ParamError, NotCapable,
+                                XcNotFound, BusyResources,
+                                InternalError, GenericError);
+
+                void protect(out Types::uint32           handle,
+                             in  TNRC::portIdentifier    port_xc,
+                             in  gmplsTypes::labelId     label_xc,
+                             in  TNRC::portIdentifier    port_prot,
+                             in  gmplsTypes::labelId     label_prot,
+                             in  gmplsTypes::xcDirection direction,
+                             in  boolean                 isVirtual,
+                             out Types::uint32           timeout)
+                        raises (EqptLinkDown, ParamError, NotCapable,
+                                BusyResources,
+                                InternalError, GenericError);
+
+                void unprotect(in Types::uint32  handle,
+                               in boolean        isVirtual,
+                               out Types::uint32 timeout)
+                        raises (EqptLinkDown, ParamError, NotCapable,
+                                BusyResources,
+                                InternalError, GenericError);
+        };
+};
+
+#endif

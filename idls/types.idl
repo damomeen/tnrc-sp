@@ -1,0 +1,29 @@
+//
+//  This file is part of gmpls-nextworks
+//
+//  Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Nextworks s.r.l.
+//
+//  @LICENSE_BEGIN@
+//  @LICENSE_END@
+//
+//  Giacomo Bernini       <g DOT bernini AT nextworks DOT it>
+//  Gino Carrozzo         <g DOT carrozzo AT nextworks DOT it>
+//  Nicola Ciulli         <n DOT ciulli AT nextworks DOT it>
+//  Francesco Salvestrini <f DOT salvestrini AT nextworks DOT it>
+//
+
+#ifndef TYPES_IDL
+#define TYPES_IDL
+
+interface Types {
+        typedef char                    uint8;
+        typedef unsigned short          uint16;
+        typedef unsigned long           uint32;
+        typedef unsigned long long      uint64;
+        //typedef uint32          uint128[4];
+
+        exception InternalProblems      { string  what; };
+        exception CannotFetch           { string  what; };
+};
+
+#endif

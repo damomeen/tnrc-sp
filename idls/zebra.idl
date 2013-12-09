@@ -1,0 +1,89 @@
+//
+//  This file is part of gmpls-nextworks
+//
+//  Copyright (C) 2006, 2007, 2008, 2009, 2010, 2011 Nextworks s.r.l.
+//
+//  @LICENSE_BEGIN@
+//  @LICENSE_END@
+//
+//  Giacomo Bernini       <g DOT bernini AT nextworks DOT it>
+//  Gino Carrozzo         <g DOT carrozzo AT nextworks DOT it>
+//  Nicola Ciulli         <n DOT ciulli AT nextworks DOT it>
+//  Francesco Salvestrini <f DOT salvestrini AT nextworks DOT it>
+//
+
+#ifndef ZEBRA_IDL
+#define ZEBRA_IDL
+
+#include "types.idl"
+#include "gmpls.idl"
+
+module ZEBRA {
+
+        interface Node {
+                exception InternalProblems  { };
+                exception UnknownNode       { };
+
+                void update(in Types::uint32        ridKey,
+                            in gmplsTypes::nodeData data)
+                        raises (InternalProblems);
+        };
+
+        interface TeLink {
+
+                exception InternalProblems      { };
+                exception UnknownTELink         { };
+
+                void add(in Types::uint32          telKey,
+                         in gmplsTypes::TELinkData telData)
+                        raises (InternalProblems);
+
+                void del(in Types::uint32 telKey)
+                        raises (InternalProblems, UnknownTELink);
+
+                void updateMetric(in Types::uint32 telKey,
+                                  in Types::uint32 metric)
+                        raises (InternalProblems, UnknownTELink);
+
+                void updateColor(in Types::uint32 telKey,
+                                 in Types::uint32 colorMask)
+                        raises (InternalProblems, UnknownTELink);
+
+                void updateBw(in Types::uint32                      telKey,
+                              in gmplsTypes::bwPerPrio              availBw,
+			      in gmplsTypes::bwPerPrio              maxLspBw,
+                              in gmplsTypes::teLinkCalendarSeq      calendar,
+                              in gmplsTypes::teLinkWdmLambdasBitmap lambdaBit)
+                        raises (InternalProblems, UnknownTELink);
+
+                void updateDJPL(in Types::uint32 telKey,
+                                in Types::uint32 avgDelay,
+                                in Types::uint32 maxDelay,
+                                in Types::uint32 avgJitter,
+                                in Types::uint32 avgPktLoss,
+                                in Types::uint32 maxPktLoss)
+                        raises (InternalProblems, UnknownTELink);
+
+                void updateSrlg(in Types::uint32       telKey,
+                                in gmplsTypes::srlgSeq srlg)
+                        raises (InternalProblems, UnknownTELink);
+
+                void updateTna(in Types::uint32     telKey,
+                               in gmplsTypes::tnaId tnaId)
+                        raises (InternalProblems, UnknownTELink);
+
+                void updateProtection(in Types::uint32        telKey,
+                                      in gmplsTypes::protType prot)
+                        raises (InternalProblems, UnknownTELink);
+
+                void updatePower(in Types::uint32          telKey,
+                                 in gmplsTypes::powerType  powerConsumption)
+                        raises (InternalProblems, UnknownTELink);
+
+                void updateReplanningInfo(in Types::uint32                 telKey,
+                                          in gmplsTypes::vlinkBwReplanInfo replanInfo)
+                        raises (InternalProblems, UnknownTELink);
+        };
+};
+
+#endif // ZEBRA_IDL

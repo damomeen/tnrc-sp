@@ -1,0 +1,4 @@
+#!/bin/bash
+
+omniidl -bpython client.idl
+omniidl -bpython server.idl

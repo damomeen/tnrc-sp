@@ -1,0 +1,13 @@
+INTERFACES = {
+    'servers': {
+        'rest-CCI': {
+           'port': 8011,
+            'ssl': False,
+            'certFilesDir':'/home/user/geysers-wp4/branches/tnrc-sp/ssl/',
+        },    
+    },
+    'nodes': ['Colchester16Apr2012.node1FSC', 'Colchester16Apr2012.node2FSC', 'Colchester16Apr2012.node3FSC', 'Colchester16Apr2012.node4FSC'],
+    'testingNode':     '1',
+    'testingPort':     'in2',
+    'testingResource': '1',
+}

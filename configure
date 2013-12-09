@@ -1,0 +1,24 @@
+#!/bin/bash
+# -*- sh -*-
+
+#
+#
+# (C) 2011 PSNC
+#
+# Authors:
+#     Damian Parniewicz (PSNC) <damianp_at_man.poznan.pl>
+#
+omniidl -bpython idls/types.idl
+omniidl -bpython idls/zebra.idl
+omniidl -bpython idls/gmpls.idl
+omniidl -bpython idls/tnrcCommon.idl
+omniidl -bpython idls/tnrcGeneric.idl
+omniidl -bpython idls/tnrcSpecific.idl
+omniidl -bpython idls/SecGateway2.idl
+omniidl -bpython idls/lrm.idl
+
+if [ ! -e tnrcsp.conf ]
+then
+    cp tnrcsp.conf.sample tnrcsp.conf
+    echo "File tnrcsp.conf created"
+fi
