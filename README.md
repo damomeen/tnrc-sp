@@ -63,6 +63,7 @@ Most important requirements
 1) Python libraries:
  - python-webob
  - python-decorator
+ 
 2) Supporting library 'geysers_psnc_utils' from GEYSERS repository already installed
 
 
@@ -90,6 +91,7 @@ The explanation of configuration parameters is presented in form of comments ('#
 
 The content of 'tnrsp.conf' is the following:
 
+<pre>
 INTERFACES = {
     'clients': # contains configuration for used clients towards others modules
     {
@@ -149,6 +151,7 @@ INTERFACES = {
         },
     },
 }
+</pre>
 
 Basic usage
 -------------
