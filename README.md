@@ -3,7 +3,7 @@ tnrc-sp
 
 Module description
 --------------------
-It is 'tnrcsp' module (Transport Network Resource Controller - Specific Part).
+It is 'tnrcsp' module (Transport Network Resource Controller - Specific Part) for GMPLS/ASON Control Plane.
 
 TNRC Specific Part (TNRC-SP) component is a part of GMPLS+ controller and allows retrieval of information about the virtual transport resources (inventory, states, alarms)
 and configuration of virtual transport resources. It performs all communication between NCP+ and Upper-LICL via CCI interface. The component prototype implements HTTP-REST clients
